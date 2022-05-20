@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"github.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="딥러닝 개론퍼셉트론01 인공 신경망데이터  -&gt; input layer -&gt; 1 hidden layer -&gt; … layer -&gt; output layer&#x3D;&gt; 회귀분석, 분류, 패턴파악. 테이트의 특성 &#x3D; feature 지도학슴(class) 비지도 학습 (clustering) 02 퍼셉트론 (Perceptron)네트워">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="deep learning 기초">
+<meta property="og:url" content="https://github.com/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/index.html">
+<meta property="og:site_name" content="Hojune Dev">
+<meta property="og:description" content="딥러닝 개론퍼셉트론01 인공 신경망데이터  -&gt; input layer -&gt; 1 hidden layer -&gt; … layer -&gt; output layer&#x3D;&gt; 회귀분석, 분류, 패턴파악. 테이트의 특성 &#x3D; feature 지도학슴(class) 비지도 학습 (clustering) 02 퍼셉트론 (Perceptron)네트워">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://github.com/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img.png">
+<meta property="og:image" content="https://github.com/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img_1.png">
+<meta property="og:image" content="https://github.com/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img_2.png">
+<meta property="og:image" content="https://github.com/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img_3.png">
+<meta property="og:image" content="https://github.com/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img_4.png">
+<meta property="og:image" content="https://github.com/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img_5.png">
+<meta property="og:image" content="https://github.com/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img_6.png">
+<meta property="og:image" content="https://github.com/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img_8.png">
+<meta property="og:image" content="https://github.com/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img_9.png">
+<meta property="og:image" content="https://github.com/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img_7.png">
+<meta property="og:image" content="https://github.com/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img_10.png">
+<meta property="og:image" content="https://github.com/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img_11.png">
+<meta property="og:image" content="https://github.com/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img_12.png">
+<meta property="article:published_time" content="2022-05-17T06:38:52.000Z">
+<meta property="article:modified_time" content="2022-05-17T06:41:40.002Z">
+<meta property="article:author" content="Hojune Lee">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img.png">
+
+
+<link rel="canonical" href="https://github.com/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"ko","comments":true,"permalink":"https://github.com/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/","path":"2022/05/17/deep-learning-기초/","title":"deep learning 기초"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>deep learning 기초 | Hojune Dev</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hojune Dev</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">dev blog</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>홈</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>정보</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>태그</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>카테고리</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>검색
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          목차
+        </li>
+        <li class="sidebar-nav-overview">
+          흝어보기
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%EB%94%A5%EB%9F%AC%EB%8B%9D-%EA%B0%9C%EB%A1%A0"><span class="nav-number">1.</span> <span class="nav-text">딥러닝 개론</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%ED%8D%BC%EC%85%89%ED%8A%B8%EB%A1%A0"><span class="nav-number">1.1.</span> <span class="nav-text">퍼셉트론</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#01-%EC%9D%B8%EA%B3%B5-%EC%8B%A0%EA%B2%BD%EB%A7%9D"><span class="nav-number">1.1.1.</span> <span class="nav-text">01 인공 신경망</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#02-%ED%8D%BC%EC%85%89%ED%8A%B8%EB%A1%A0-Perceptron"><span class="nav-number">1.1.2.</span> <span class="nav-text">02 퍼셉트론 (Perceptron)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%ED%99%9C%EC%84%B1%ED%99%94-%ED%95%A8%EC%88%98-Activation-function"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">활성화 함수 (Activation function)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%ED%8D%BC%EC%85%89%ED%8A%B8%EB%A1%A0-%EC%BD%94%EB%93%9C-%EC%98%88%EC%8B%9C"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">퍼셉트론 코드 예시</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#03-%ED%8D%BC%EC%85%89%ED%8A%B8%EB%A1%A0-%EC%84%A0%ED%98%95-%EB%B6%84%EB%A5%98%EA%B8%B0"><span class="nav-number">1.1.3.</span> <span class="nav-text">03 퍼셉트론 선형 분류기</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%ED%8D%BC%EC%85%89%ED%8A%B8%EB%A1%A0-%EB%85%BC%EB%A6%AC%ED%9A%8C%EB%A1%9C-AND-gate"><span class="nav-number">1.1.3.0.1.</span> <span class="nav-text">퍼셉트론 논리회로 - AND gate</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%ED%8D%BC%EC%85%89%ED%8A%B8%EB%A1%A0-%EB%85%BC%EB%A6%AC%ED%9A%8C%EB%A1%9C-OR-gate"><span class="nav-number">1.1.3.0.2.</span> <span class="nav-text">퍼셉트론 논리회로 - OR gate</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%ED%8D%BC%EC%85%89%ED%8A%B8%EB%A1%A0-%EB%85%BC%EB%A6%AC%ED%9A%8C%EB%A1%9C-NOR-gate"><span class="nav-number">1.1.3.0.3.</span> <span class="nav-text">퍼셉트론 논리회로 - NOR gate</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%ED%8D%BC%EC%85%89%ED%8A%B8%EB%A1%A0-%EB%85%BC%EB%A6%AC%ED%9A%8C%EB%A1%9C-NAND-gate"><span class="nav-number">1.1.3.0.4.</span> <span class="nav-text">퍼셉트론 논리회로 - NAND gate</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#04-%EB%B9%84-%EC%84%A0%ED%98%95%EC%A0%81%EC%9D%B8-%EB%AC%B8%EC%A0%9C"><span class="nav-number">1.1.4.</span> <span class="nav-text">04 비 선형적인 문제</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%EB%B9%84-%EC%84%A0%ED%98%95%EC%A0%81-%EB%85%BC%EB%A6%AC-%EA%B2%8C%EC%9D%B4%ED%8A%B8-XOR-gate"><span class="nav-number">1.1.4.0.1.</span> <span class="nav-text">비 선형적 논리 게이트, XOR gate</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#05-%EB%8B%A4%EC%B8%B5-%ED%94%BC%EC%85%89%ED%8A%B8%EB%A1%A0"><span class="nav-number">1.1.5.</span> <span class="nav-text">05 다층 피셉트론</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EC%98%88%EC%A0%9C-%EB%AC%B8%EC%A0%9C"><span class="nav-number">1.2.</span> <span class="nav-text">예제 문제</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%EB%8B%A4%EC%B8%B5-%ED%8D%BC%EC%85%89%ED%8A%B8%EB%A1%A0-MLP-%EB%AA%A8%EB%8D%B8%EB%A1%9C-2D-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EB%B6%84%EB%A5%98%ED%95%98%EA%B8%B0"><span class="nav-number">1.2.1.</span> <span class="nav-text">다층 퍼셉트론(MLP) 모델로 2D 데이터 분류하기</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%EC%8B%A4%EC%8A%B5"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">실습</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%EC%B6%9C%EB%A0%A5-%EC%98%88%EC%8B%9C"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">출력 예시</span></a></li></ol></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Hojune Lee</p>
+  <div class="site-description" itemprop="description">My dev blog</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">포스트</span>
+        </a>
+      </div>
+  </nav>
+</div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ko" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="ko">
+    <link itemprop="mainEntityOfPage" href="https://github.com/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Hojune Lee">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hojune Dev">
+      <meta itemprop="description" content="My dev blog">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="deep learning 기초 | Hojune Dev">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          deep learning 기초
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">작성일</span>
+      
+
+      <time title="Post created: 2022-05-17 15:38:52 / Updated at: 15:41:40" itemprop="dateCreated datePublished" datetime="2022-05-17T15:38:52+09:00">2022-05-17</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="딥러닝-개론"><a href="#딥러닝-개론" class="headerlink" title="딥러닝 개론"></a>딥러닝 개론</h1><h2 id="퍼셉트론"><a href="#퍼셉트론" class="headerlink" title="퍼셉트론"></a>퍼셉트론</h2><h3 id="01-인공-신경망"><a href="#01-인공-신경망" class="headerlink" title="01 인공 신경망"></a>01 인공 신경망</h3><p>데이터  -&gt; input layer -&gt; 1 hidden layer -&gt; … layer -&gt; output layer<br>&#x3D;&gt; 회귀분석, 분류, 패턴파악.</p>
+<p>테이트의 특성 &#x3D; feature</p>
+<p>지도학슴(class)</p>
+<p>비지도 학습 (clustering)</p>
+<h3 id="02-퍼셉트론-Perceptron"><a href="#02-퍼셉트론-Perceptron" class="headerlink" title="02 퍼셉트론 (Perceptron)"></a>02 퍼셉트론 (Perceptron)</h3><p>네트워크를 이루는 하나하나의 요소를 퍼셉트론 이라 한다.<br><img data-src="/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img.png" alt="img.png"></p>
+<blockquote>
+<p>활성화 함수 : 비선형함수이다.</p>
+</blockquote>
+<h4 id="활성화-함수-Activation-function"><a href="#활성화-함수-Activation-function" class="headerlink" title="활성화 함수 (Activation function)"></a>활성화 함수 (Activation function)</h4><p><img data-src="/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img_1.png" alt="img_1.png"></p>
+<p><img data-src="/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img_2.png" alt="img_2.png"></p>
+<p><img data-src="/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img_3.png" alt="img_3.png"></p>
+<h4 id="퍼셉트론-코드-예시"><a href="#퍼셉트론-코드-예시" class="headerlink" title="퍼셉트론 코드 예시"></a>퍼셉트론 코드 예시</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">perceptron</span>(<span class="params">x, weights</span>):</span><br><span class="line">    <span class="comment"># bias</span></span><br><span class="line">    sum_ = weights[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(x)-<span class="number">1</span>):</span><br><span class="line">        sum_ += weights[i+<span class="number">1</span>] * x[i]</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span> <span class="keyword">if</span> sum_ &gt;= <span class="number">0</span> <span class="keyword">else</span> <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<p><img data-src="/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img_4.png" alt="img_4.png"></p>
+<h3 id="03-퍼셉트론-선형-분류기"><a href="#03-퍼셉트론-선형-분류기" class="headerlink" title="03 퍼셉트론 선형 분류기"></a>03 퍼셉트론 선형 분류기</h3><h5 id="퍼셉트론-논리회로-AND-gate"><a href="#퍼셉트론-논리회로-AND-gate" class="headerlink" title="퍼셉트론 논리회로 - AND gate"></a>퍼셉트론 논리회로 - AND gate</h5><p><img data-src="/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img_5.png" alt="img_5.png"></p>
+<blockquote>
+<p>AND gate:</p>
+<p>c &#x3D; activation( 1 * A + 1 * B - 1.5)</p>
+</blockquote>
+<h5 id="퍼셉트론-논리회로-OR-gate"><a href="#퍼셉트론-논리회로-OR-gate" class="headerlink" title="퍼셉트론 논리회로 - OR gate"></a>퍼셉트론 논리회로 - OR gate</h5><p><img data-src="/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img_6.png" alt="img_6.png"></p>
+<blockquote>
+<p>OR gate:</p>
+<p>c &#x3D; activation( 1 * A + 1 * B - 0.5)</p>
+</blockquote>
+<h5 id="퍼셉트론-논리회로-NOR-gate"><a href="#퍼셉트론-논리회로-NOR-gate" class="headerlink" title="퍼셉트론 논리회로 - NOR gate"></a>퍼셉트론 논리회로 - NOR gate</h5><p><img data-src="/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img_8.png" alt="img_8.png"></p>
+<blockquote>
+<p>NOR gate</p>
+<p>C &#x3D; activation((-1)*A + (-1)*B + 0.5 )</p>
+</blockquote>
+<h5 id="퍼셉트론-논리회로-NAND-gate"><a href="#퍼셉트론-논리회로-NAND-gate" class="headerlink" title="퍼셉트론 논리회로 - NAND gate"></a>퍼셉트론 논리회로 - NAND gate</h5><p><img data-src="/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img_9.png" alt="img_9.png"></p>
+<blockquote>
+<p>NAND gate</p>
+<p>C &#x3D; activation((-1)*A + (-1)*B + 1.5 )</p>
+</blockquote>
+<p>이외의 NOR, NAND 포함하여, Linar classifier</p>
+<p><img data-src="/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img_7.png" alt="img_7.png"></p>
+<h3 id="04-비-선형적인-문제"><a href="#04-비-선형적인-문제" class="headerlink" title="04 비 선형적인 문제"></a>04 비 선형적인 문제</h3><h5 id="비-선형적-논리-게이트-XOR-gate"><a href="#비-선형적-논리-게이트-XOR-gate" class="headerlink" title="비 선형적 논리 게이트, XOR gate"></a>비 선형적 논리 게이트, XOR gate</h5><p>–&gt; xor로 인하여 빙하기~</p>
+<h3 id="05-다층-피셉트론"><a href="#05-다층-피셉트론" class="headerlink" title="05 다층 피셉트론"></a>05 다층 피셉트론</h3><img alt="img_10.png" data-src="img_10.png" width="400"/>
+
+<p>Hidden layer가 많아질 수록, complexity가 증가</p>
+<p>이를 경우 deep learning이라고 함.</p>
+<hr>
+<h2 id="예제-문제"><a href="#예제-문제" class="headerlink" title="예제 문제"></a>예제 문제</h2><h3 id="다층-퍼셉트론-MLP-모델로-2D-데이터-분류하기"><a href="#다층-퍼셉트론-MLP-모델로-2D-데이터-분류하기" class="headerlink" title="다층 퍼셉트론(MLP) 모델로 2D 데이터 분류하기"></a>다층 퍼셉트론(MLP) 모델로 2D 데이터 분류하기</h3><p><code>data</code> 폴더에 위치한 <code>test.txt</code> 데이터와 <code>train.txt</code> 데이터를 활용하여 2-D 평면에 0과 1로 이루어진 점들의 각 좌표 정보 (x,y)(x, y)(x,y) 를 통해 모델을 학습시키겠습니다.</p>
+<p><code>hidden_layer_sizes</code>를 조정해보면서 다층 퍼셉트론 분류 모델을 학습시켜 모델의 정확도가 81% 를 넘도록 해봅시다.</p>
+<p>이전 실습에서 단층 퍼셉트론인 AND, OR, NAND Gate를 구현하고, 이들을 쌓아서 XOR Gate를 만들어 보았습니다. 즉, XOR Gate는 단층 퍼셉트론을 여러 개 쌓아서 만든 다층 퍼셉트론 (MLP: Multi Layer Perceptron)이라고 할 수 있습니다. 다층 퍼셉트론으로 만든 모델은 인공 신경망이라고도 합니다.</p>
+<p>image</p>
+<p>이번 실습에서는 사이킷런에서 제공하는 다층 퍼셉트론 모델인 <code>MLPClassifier</code>를 이용해서 2D 데이터를 분류해보겠습니다.<br><img alt="img_11.png" data-src="img_11.png" width="600"/></p>
+<hr>
+<p>다층 퍼셉트론 모델을 사용하기 위한 사이킷런 함수&#x2F;라이브러리</p>
+<ul>
+<li><p><code>from sklearn.neural_network import MLPClassifier</code>: 사이킷런에 구현되어 있는 다층 퍼셉트론 모델을 불러옵니다.</p>
+</li>
+<li><p><code>MLPClassifier(hidden_layer_sizes)</code>: MLPClassifier를 정의합니다.</p>
+</li>
+<li><p><code>hidden_layer_sizes</code>: 간단하게 hidden layer의 크기를 조절할 수 있는 인자입니다.</p>
+</li>
+</ul>
+<hr>
+<p><code>MLPClassifier</code>는 역전파(backpropagation)라는 기법을 사용하여 모델을 학습합니다. 역전파는 2장에서 자세하게 배울 수 있으니 여기선 용어만 알아둡시다.</p>
+<p>밑의 소스 코드는 첫 번째 히든층에 4개, 두 번째 히든층에 4개의 퍼셉트론을 가지게 설정한 것이고, 위 그림과 같은 모델을 나타냅니다.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">clf = MLPClassifier(hidden_layer_sizes=(<span class="number">4</span>, <span class="number">4</span>))</span><br><span class="line"></span><br><span class="line">clf.fit(X, Y)</span><br></pre></td></tr></table></figure>
+<h4 id="실습"><a href="#실습" class="headerlink" title="실습"></a>실습</h4><ol>
+<li><p><code>MLPClassifier</code>를 정의하고 <code>hidden_layer_sizes</code>를 조정해 히든층의 레이어의 개수와 퍼셉트론의 개수를 바꿔본 후, 학습을 시킵니다.</p>
+</li>
+<li><p>정확도를 출력하는 report_clf_stats함수를 완성합니다. hit는 맞춘 데이터의 개수, miss는 못 맞춘 데이터의 개수입니다. 정확도 점수 score는 (맞춘 데이터의 개수 &#x2F; 전체 데이터 개수) x 100으로 정의하겠습니다. score를 코드로 작성해보세요.</p>
+</li>
+<li><p>앞서 완성한 함수를 실행시키는 main 함수를 완성합니다. 코드 주석의 Step들을 참고하세요.</p>
+</li>
+<li><p>일반적으로, 레이어 내의 퍼셉트론의 개수가 많아질수록 성능이 올라가는 것을 확인할 수 있습니다. 레이어의 개수와 퍼셉트론의 개수를 극단적으로 늘려보기도 하고, 줄여보면서 정확도를 81% 이상으로 늘려보세요.</p>
+</li>
+</ol>
+<h4 id="출력-예시"><a href="#출력-예시" class="headerlink" title="출력 예시"></a>출력 예시</h4><p>아래 이미지는 학습 결과에 대한 출력 예시입니다. 그래프에서 나타나는 배경색은 모델이 예측한 결과, O&#x2F;X 가 나타내는 색은 실제값 (ground truth) 입니다. 모델이 맞게 예측한 경우 O, 틀리게 예측한 경우 X 로 표시됩니다.<br><img data-src="/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/img_12.png" alt="img_12.png"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> visual <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> sklearn.neural_network <span class="keyword">import</span> MLPClassifier</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> elice_utils <span class="keyword">import</span> EliceUtils</span><br><span class="line">elice_utils = EliceUtils()</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> warnings</span><br><span class="line">warnings.filterwarnings(action=<span class="string">&#x27;ignore&#x27;</span>)</span><br><span class="line"></span><br><span class="line">np.random.seed(<span class="number">100</span>)</span><br><span class="line">    </span><br><span class="line"><span class="comment"># 데이터를 읽어오는 함수입니다.</span></span><br><span class="line">    </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">read_data</span>(<span class="params">filename</span>):</span><br><span class="line">    </span><br><span class="line">    X = []</span><br><span class="line">    Y = []</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(filename) <span class="keyword">as</span> fp:</span><br><span class="line">        N, M = fp.readline().split()</span><br><span class="line">        N = <span class="built_in">int</span>(N)</span><br><span class="line">        M = <span class="built_in">int</span>(M)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(N):</span><br><span class="line">            line = fp.readline().split()</span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(M):</span><br><span class="line">                X.append([i, j])</span><br><span class="line">                Y.append(<span class="built_in">int</span>(line[j]))</span><br><span class="line">    </span><br><span class="line">    X = np.array(X)</span><br><span class="line">    Y = np.array(Y)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> (X, Y)</span><br><span class="line"></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">1. MLPClassifier를 정의하고 hidden_layer_sizes를</span></span><br><span class="line"><span class="string">   조정해 hidden layer의 크기 및 레이어의 개수를</span></span><br><span class="line"><span class="string">   바꿔본 후, 학습을 시킵니다. Done</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">train_MLP_classifier</span>(<span class="params">X, Y</span>):</span><br><span class="line">    </span><br><span class="line">    clf = MLPClassifier(hidden_layer_sizes=(<span class="number">100</span>, <span class="number">100</span>))</span><br><span class="line">    </span><br><span class="line">    clf.fit(X, Y)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> clf</span><br><span class="line"></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">2. 테스트 데이터에 대한 정확도를 출력하는 </span></span><br><span class="line"><span class="string">   함수를 완성합니다. 설명을 보고 score의 코드를</span></span><br><span class="line"><span class="string">   작성해보세요. Done</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">report_clf_stats</span>(<span class="params">clf, X, Y</span>):</span><br><span class="line">    </span><br><span class="line">    hit = <span class="number">0</span></span><br><span class="line">    miss = <span class="number">0</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> x, y <span class="keyword">in</span> <span class="built_in">zip</span>(X, Y):</span><br><span class="line">        <span class="keyword">if</span> clf.predict([x])[<span class="number">0</span>] == y:</span><br><span class="line">            hit += <span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            miss += <span class="number">1</span></span><br><span class="line">    </span><br><span class="line">    score = hit / <span class="built_in">len</span>(X) * <span class="number">100</span></span><br><span class="line">    </span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Accuracy: %.1lf%% (%d hit / %d miss)&quot;</span> % (score, hit, miss))</span><br><span class="line">    <span class="keyword">return</span> score</span><br><span class="line"></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">3. main 함수를 완성합니다.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">   Step01. 학습용 데이터인 X_train, Y_train과</span></span><br><span class="line"><span class="string">           테스트용 데이터인 X_test, Y_test를 각각</span></span><br><span class="line"><span class="string">           read_data에서 반환한 값으로 정의합니다. </span></span><br><span class="line"><span class="string">           </span></span><br><span class="line"><span class="string">           우리가 사용할 train.txt 데이터셋과</span></span><br><span class="line"><span class="string">           test.txt 데이터셋은 data 폴더에 위치합니다.</span></span><br><span class="line"><span class="string">           </span></span><br><span class="line"><span class="string">   Step02. 앞에서 학습시킨 다층 퍼셉트론 분류 </span></span><br><span class="line"><span class="string">           모델을 &#x27;clf&#x27;로 정의합니다. &#x27;clf&#x27;의 변수로는</span></span><br><span class="line"><span class="string">           X_train과 Y_train으로 설정합니다.</span></span><br><span class="line"><span class="string">           </span></span><br><span class="line"><span class="string">   Step03. 앞에서 완성한 정확도 출력 함수를</span></span><br><span class="line"><span class="string">           &#x27;score&#x27;로 정의합니다. &#x27;score&#x27;의 변수로는</span></span><br><span class="line"><span class="string">           X_test와 Y_test로 설정합니다.</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    </span><br><span class="line">    X_train, Y_train = read_data(<span class="string">&#x27;data/train.txt&#x27;</span>)</span><br><span class="line">    </span><br><span class="line">    X_test, Y_test = read_data(<span class="string">&#x27;data/test.txt&#x27;</span>)</span><br><span class="line">    </span><br><span class="line">    clf = train_MLP_classifier(X_train, Y_train)</span><br><span class="line">    </span><br><span class="line">    score = report_clf_stats(clf, X_test, Y_test)</span><br><span class="line">    </span><br><span class="line">    visualize(clf, X_test, Y_test)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">train.txt</span><br><span class="line">[&#x27;10 10\n&#x27;, &#x27;0 0 0 0 0 0 0 0 0 0\n&#x27;, &#x27;0 0 0 0 0 0 0 0 0 0\n&#x27;, &#x27;0 0 0 0 0 0 0 0 0 0\n&#x27;, &#x27;0 0 0 1 1 1 0 0 0 0\n&#x27;, &#x27;0 0 1 1 1 1 1 0 0 0\n&#x27;, &#x27;0 1 1 1 1 1 1 1 0 0\n&#x27;, &#x27;0 1 1 1 1 1 1 1 0 0\n&#x27;, &#x27;1 1 1 1 1 1 1 1 1 0\n&#x27;, &#x27;1 1 1 1 1 1 1 1 1 0\n&#x27;, &#x27;1 1 1 1 1 1 1 1 1 0&#x27;]</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">test.txt</span><br><span class="line">[&#x27;10 10\n&#x27;, &#x27;0 0 0 0 0 0 0 0 0 0\n&#x27;, &#x27;0 0 0 0 0 0 0 0 0 0\n&#x27;, &#x27;0 0 0 0 0 0 0 0 0 0\n&#x27;, &#x27;0 0 0 0 0 1 1 1 0 0\n&#x27;, &#x27;0 0 0 0 1 1 1 1 1 0\n&#x27;, &#x27;0 0 0 1 1 1 1 1 1 0\n&#x27;, &#x27;0 0 1 1 1 1 1 1 1 0\n&#x27;, &#x27;0 1 1 1 1 1 1 1 1 1\n&#x27;, &#x27;1 1 1 1 1 1 1 1 1 1\n&#x27;, &#x27;1 1 1 1 1 1 1 1 1 1\n&#x27;]</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button>
+    도네이션
+  </button>
+  <div class="post-reward">
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>포스트 작성자:  </strong>Hojune Lee
+  </li>
+  <li class="post-copyright-link">
+      <strong>Post link: </strong>
+      <a href="https://github.com/2022/05/17/deep-learning-%EA%B8%B0%EC%B4%88/" title="deep learning 기초">https://github.com/2022/05/17/deep-learning-기초/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ko" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/05/17/My-first-post/" rel="prev" title="My first post">
+                  <i class="fa fa-chevron-left"></i> My first post
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Hojune Lee</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
